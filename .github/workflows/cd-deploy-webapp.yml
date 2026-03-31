@@ -52,9 +52,4 @@ jobs:
       - name: Deploy Project Artifact
         run: >- 
             vercel deploy 
-            -e DATABASE_URL="$DATABASE_URL"
-            -e DIRECT_URL="$DIRECT_URL"
-            -e BETTER_AUTH_URL="$BETTER_AUTH_URL"
-            -e BETTER_AUTH_SECRET="$BETTER_AUTH_SECRET"
-            -e AI_ENGINE_URL="$AI_ENGINE_URL"
             --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
