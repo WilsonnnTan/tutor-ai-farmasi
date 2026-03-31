@@ -1,5 +1,5 @@
-name: CI
-run-name: CI for commit ${{ github.sha }} by @${{ github.actor }}
+name: CI - Web App
+run-name: CI for Web App on commit ${{ github.sha }} by @${{ github.actor }}
 
 on:
   pull_request:
@@ -11,6 +11,9 @@ jobs:
   ci:
     name: Lint and Prettier Check
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web_app
     steps:
       - name: Checkout branch
         uses: actions/checkout@v6
@@ -25,6 +28,7 @@ jobs:
         with:
           node-version: '22.18'
           cache: 'pnpm'
+          cache-dependency-path: './web_app/pnpm-lock.yaml'
 
       - name: Install deps
         run: pnpm install
