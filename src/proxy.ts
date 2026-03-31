@@ -1,0 +1,34 @@
+import { getSessionCookie } from 'better-auth/cookies';
+import { type NextRequest, NextResponse } from 'next/server';
+
+export async function proxy(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request);
+
+  const pathName = request.nextUrl.pathname;
+
+  const isAuthRoute =
+    pathName.startsWith('/login') || pathName.startsWith('/register');
+  const isProtectedRoute = pathName.startsWith('/dashboard');
+
+  // Protect secure routes when entirely unauthenticated
+  if (!sessionCookie && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Auto-redirect authenticated users away from the login and register pages
+  if (sessionCookie && isAuthRoute) {
+    if (request.nextUrl.searchParams.get('session_expired') === 'true') {
+      const response = NextResponse.next();
+      response.cookies.delete('__Secure-better-auth.session_token');
+      response.cookies.delete('__Secure-better-auth.session_data');
+      return response;
+    }
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/login', '/register'],
+};
