@@ -22,8 +22,8 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-        <Link href="/dashboard/sample-test">
-          <Card className="group hover:shadow-2xl transition-all duration-500 cursor-pointer border-none bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/20 dark:to-background">
+        <Link href="/dashboard/sample-test" className="flex">
+          <Card className="flex flex-col w-full group hover:shadow-2xl transition-all duration-500 cursor-pointer border-none bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/20 dark:to-background">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-2xl font-bold">
                 Uji Kandungan
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
                 <FlaskConical className="h-6 w-6" />
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1">
               <p className="text-muted-foreground">
                 Lakukan analisis kandungan logam dalam larutan sample
                 menggunakan metode DIC.
@@ -41,8 +41,8 @@ export default async function DashboardPage() {
           </Card>
         </Link>
 
-        <Link href="/dashboard/history">
-          <Card className="group hover:shadow-2xl transition-all duration-500 cursor-pointer border-none bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/20 dark:to-background">
+        <Link href="/dashboard/history" className="flex">
+          <Card className="flex flex-col w-full group hover:shadow-2xl transition-all duration-500 cursor-pointer border-none bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/20 dark:to-background">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-2xl font-bold">
                 Riwayat Analisis
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
                 <History className="h-6 w-6" />
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1">
               <p className="text-muted-foreground">
                 Tinjau dan kelola hasil pengujian yang telah Anda lakukan
                 sebelumnya.
