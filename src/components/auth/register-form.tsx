@@ -16,7 +16,7 @@ import * as z from 'zod';
 const registerSchema = z
   .object({
     name: z.string().min(2, 'Nama minimal 2 karakter'),
-    email: z.email('Alamat email tidak valid'),
+    email: z.string().email('Alamat email tidak valid'),
     password: z.string().min(6, 'Password minimal 6 karakter'),
     confirmPassword: z.string().min(1, 'Konfirmasi password harus diisi'),
   })

@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const loginSchema = z.object({
-  email: z.email('Alamat email tidak valid'),
+  email: z.string().email('Alamat email tidak valid'),
   password: z.string().min(1, 'Password harus diisi'),
 });
 
