@@ -23,6 +23,18 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v6
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.18'
+          cache: 'pnpm'
+          cache-dependency-path: './web_app/pnpm-lock.yaml'
+
       - name: Install Vercel CLI
         run: npm install --global vercel
 
