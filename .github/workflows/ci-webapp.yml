@@ -3,9 +3,9 @@ run-name: CI for Web App on commit ${{ github.sha }} by @${{ github.actor }}
 
 on:
   pull_request:
-    branches: [main]
+    branches: ['**']
   push:
-    branches: [main]
+    branches: ['**']
 
 jobs:
   ci:
