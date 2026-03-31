@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import * as z from 'zod/v3';
 
 const registerSchema = z
   .object({
@@ -44,7 +44,7 @@ export function RegisterForm() {
 
   const onSubmit = async (data: RegisterFormValues) => {
     setError(null);
-    setIsLoading(true);
+    +setIsLoading(true);
 
     try {
       const { error: signUpError } = await signUp.email({
