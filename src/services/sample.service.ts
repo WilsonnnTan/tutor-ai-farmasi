@@ -1,5 +1,6 @@
 import { ApiError } from '@/lib/error';
 import { saveSampleImage } from '@/lib/file-utils';
+import { logError, logger } from '@/logger/logger';
 import { sampleRepository } from '@/repositories/sample.repository';
 
 export const sampleService = {
@@ -8,6 +9,7 @@ export const sampleService = {
   },
 
   async analyzeSample(base64Image: string, metalType: string) {
+    logger.info(`Analisis sample dimulai untuk logam: ${metalType}`);
     const fastApiUrl =
       process.env.AI_ENGINE_URL || 'http://localhost:5000/api/predict';
 
@@ -34,7 +36,7 @@ export const sampleService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('FastAPI Error:', errorText);
+        logger.error('FastAPI Error Response', { errorText });
         throw new ApiError(
           'Gagal menganalisis sample dengan layanan eksternal',
           502,
@@ -42,6 +44,9 @@ export const sampleService = {
       }
 
       const data = await response.json();
+      logger.info(
+        `Analisis berhasil: ${data.concentration_mg_per_L} mg/L (${data.status})`,
+      );
 
       return {
         rgb: data.rgb,
@@ -49,6 +54,7 @@ export const sampleService = {
         status: data.status,
       };
     } catch (error) {
+      logError(error, { metalType });
       if (error instanceof ApiError) throw error;
       throw new ApiError('Gagal menganalisis sample', 500);
     }
@@ -65,18 +71,27 @@ export const sampleService = {
       image: string; // base64
     },
   ) {
-    // Save image to public folder
-    const imagePath = await saveSampleImage(data.image);
+    logger.info(`Menyimpan hasil analisis untuk: ${data.sample_name}`);
+    try {
+      // Save image to public folder
+      const imagePath = await saveSampleImage(data.image);
 
-    // Create entry in DB
-    return sampleRepository.create({
-      sampleName: data.sample_name,
-      testDate: new Date(data.test_date),
-      metalType: data.metal_type,
-      concentration: data.concentration || null,
-      rgbValue: data.rgb_value || null,
-      imagePath,
-      userId,
-    });
+      // Create entry in DB
+      const result = await sampleRepository.create({
+        sampleName: data.sample_name,
+        testDate: new Date(data.test_date),
+        metalType: data.metal_type,
+        concentration: data.concentration || null,
+        rgbValue: data.rgb_value || null,
+        imagePath,
+        userId,
+      });
+
+      logger.info(`Hasil berhasil disimpan: ${imagePath}`);
+      return result;
+    } catch (error) {
+      logError(error, { sampleName: data.sample_name });
+      throw error;
+    }
   },
 };
