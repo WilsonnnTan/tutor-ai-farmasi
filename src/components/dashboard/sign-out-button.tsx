@@ -15,8 +15,6 @@ export function SignOutButton() {
     try {
       await signOut();
       router.push('/login');
-    } catch (err) {
-      console.error('Sign out failed:', err);
     } finally {
       setIsPending(false);
     }
