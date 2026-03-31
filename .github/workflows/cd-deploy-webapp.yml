@@ -1,4 +1,4 @@
-name: Deploy Web App to Vercel
+name: CD - Deploy Web App to Vercel
 run-name: Web App Deployment on commit ${{ github.sha }} by @${{ github.actor }}
 
 env:

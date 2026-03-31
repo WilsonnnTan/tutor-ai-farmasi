@@ -1,5 +1,5 @@
-name: Web App Vercel Preview Deployment
-run-name: Web App Deployment on commit ${{ github.sha }} by @${{ github.actor }}
+name: CD (preview) - Web App Vercel Preview Deployment
+run-name: Web App Preview Deployment on commit ${{ github.sha }} by @${{ github.actor }}
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_WEBAPP_ORG_ID }}
