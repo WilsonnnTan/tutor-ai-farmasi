@@ -254,11 +254,7 @@ export function HistoryTable() {
                         <TableCell className="text-right">
                           <Dialog>
                             <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSelectedSample(s)}
-                              >
+                              <Button variant="ghost" size="sm">
                                 <Eye className="h-4 w-4 mr-2" /> Detail
                               </Button>
                             </DialogTrigger>
