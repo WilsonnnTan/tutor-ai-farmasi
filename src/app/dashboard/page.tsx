@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { signOut, useSession } from '@/lib/auth-client';
+import { signOut, useSession } from '@/lib/auth/auth-client';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
