@@ -4,11 +4,6 @@ run-name: Web App Deployment on commit ${{ github.sha }} by @${{ github.actor }}
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_WEBAPP_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_WEBAPP_PROJECT_ID }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  DIRECT_URL: ${{ secrets.DIRECT_URL }}
-  BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-  AI_ENGINE_URL: ${{ secrets.AI_ENGINE_URL }}
 
 on:
   workflow_run:
