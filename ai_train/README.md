@@ -23,14 +23,20 @@ Synchronize the dependencies and create a virtual environment:
 uv sync
 ```
 
-### 2. Training the Model
+### 2. Select the Python Kernel
+
+After synchronizing, you must select the correct Python kernel in your Jupyter environment. Choose the one from the `.venv` directory created by `uv`.
+
+![Select Kernel](./assets/select_kernel.png)
+
+### 3. Training the Model
 
 1. Ensure the `dataset/` directory contains the necessary training images.
 2. Open `main.ipynb` in your Jupyter environment.
 3. Run the cells to process images, extract features, and train the Random Forest model.
 4. The trained model will be saved in the `model/` directory.
 
-### 3. Evaluating Model Performance
+### 4. Evaluating Model Performance
 
 1. Open `predict.ipynb`.
 2. Run the notebook to evaluate the model against a test set and visualize the prediction accuracy using error metrics (Absolute Error, Percentage Error).

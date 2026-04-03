@@ -10,10 +10,11 @@ Ensure you have **Node.js** (v18+) and **pnpm** installed on your system.
 
 ### 2. Installation
 
-Install the project dependencies:
+Install the project dependencies and generate the Prisma Client:
 
 ```bash
 pnpm install
+pnpm prisma generate
 ```
 
 ### 3. Environment Variables
