@@ -1,8 +1,21 @@
 # tutor-ai-farmasi - Project Setup Guide
 
-This project consists of two main components:
-- `web_app`: The web application.
-- `ai_engine`: The AI service.
+This project consists of three main components:
+- `web_app`: The frontend application (Next.js) for user interaction.
+- `ai_engine`: The production-ready AI inference service (FastAPI) for serving predictions.
+- `ai_train`: The experimental and training workspace for model development using Jupyter Notebooks.
+
+---
+
+## Project Structure
+
+| Component | Description | Tech Stack |
+| :--- | :--- | :--- |
+| **[`web_app`](./web_app/README.md)** | The main user interface and application logic. | Next.js, TypeScript |
+| **[`ai_engine`](./ai_engine/README.md)** | FastAPI service that serves the trained model for predictions. | Python, FastAPI, Scikit-learn |
+| **[`ai_train`](./ai_train/README.md)** | Research laboratory for training and evaluating models. | Python, Jupyter, Scikit-learn, Pandas |
+
+---
 
 ## CI/CD Deployment with Vercel and GitHub Actions
 
