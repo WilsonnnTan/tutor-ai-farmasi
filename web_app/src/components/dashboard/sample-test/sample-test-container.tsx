@@ -51,7 +51,7 @@ export function SampleTestContainer() {
   const [selectedMetal, setSelectedMetal] = useState<MetalType>('Cu');
   const [sampleName, setSampleName] = useState('');
   const [sampleDate, setSampleDate] = useState(
-    new Date().toISOString().slice(0, 10),
+    new Date().toLocaleDateString('en-CA'),
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -157,12 +157,13 @@ export function SampleTestContainer() {
     setImageFile(null);
     setImagePreview(null);
     setSampleName('');
+    setSampleDate(new Date().toLocaleDateString('en-CA'));
   };
 
   const renderForm = () => {
     const metal = METAL_LIMITS[selectedMetal];
     return (
-      <Card className="w-full max-w-2xl mx-auto shadow-2xl border-none bg-background/80 backdrop-blur-xl animate-in zoom-in-95 duration-500">
+      <Card className="w-full max-w-2xl mx-auto shadow-2xl border-none bg-background/80 backdrop-blur-xl">
         <CardHeader className="border-b bg-muted/20 pb-4">
           <div className="flex items-center justify-between">
             <Badge className={`bg-gradient-to-r ${metal.gradient}`}>
