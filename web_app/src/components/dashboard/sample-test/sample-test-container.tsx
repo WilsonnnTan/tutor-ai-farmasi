@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 // Constants
 const METAL_LIMITS = {
   Cu: {
-    name: 'Tembaga (Cu)',
+    name: 'Tembaga (Cu) - Indikator Betalain',
     limit: 2.0,
     gradient: 'from-blue-500 to-cyan-500',
     icon: Zap,
