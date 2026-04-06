@@ -1,4 +1,5 @@
 import { SignOutButton } from '@/components/dashboard/sign-out-button';
+import TestingInstructions from '@/components/dashboard/testing-instructions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { requireUser } from '@/lib/auth/auth-page-helper';
 import { FlaskConical, History } from 'lucide-react';
@@ -8,7 +9,11 @@ export default async function DashboardPage() {
   const user = await requireUser();
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center space-y-12 p-8 pt-6">
+    <div className="relative flex min-h-screen flex-col items-center justify-center space-y-12 p-8 pt-24 pb-16">
+      <div className="absolute top-8 right-8">
+        <SignOutButton />
+      </div>
+
       <div className="text-center space-y-4">
         <h1 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
           Dashboard
@@ -34,7 +39,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent className="flex-1">
               <p className="text-muted-foreground">
-                Lakukan analisis kandungan logam dalam larutan sample
+                Lakukan analisis kandungan logam dalam larutan sampel
                 menggunakan metode DIC.
               </p>
             </CardContent>
@@ -61,9 +66,8 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <div className="w-full max-w-xs pt-8">
-        <SignOutButton />
-      </div>
+      <TestingInstructions />
+
     </div>
   );
 }

@@ -23,8 +23,8 @@ export function SignOutButton() {
   return (
     <Button
       onClick={handleSignOut}
-      variant="destructive"
-      className="w-full"
+      variant="outline"
+      className="gap-2 bg-red-700 text-white"
       disabled={isPending}
     >
       {isPending ? (
