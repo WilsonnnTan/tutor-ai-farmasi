@@ -27,7 +27,10 @@ class BaseMetalPredictor(ABC):
 
     def _load_model(self):
         if os.path.exists(self.model_path):
-            return joblib.load(self.model_path)
+            artifact = joblib.load(self.model_path)
+            if isinstance(artifact, dict) and "pipeline" in artifact:
+                return artifact["pipeline"]
+            return artifact
         return None
 
     @abstractmethod
@@ -39,8 +42,10 @@ class BaseMetalPredictor(ABC):
         """Make a prediction with the loaded model."""
         if self.model is None:
             raise ValueError(f"Model at {self.model_path} not found!")
+        
         X = pd.DataFrame([features])
-        return float(self.model.predict(X)[0])
+        prediction = self.model.predict(X)[0]
+        return float(prediction)
 
     def get_status(self, prediction: float) -> str:
         """Evaluate status against threshold."""
@@ -49,21 +54,23 @@ class BaseMetalPredictor(ABC):
 # CONCRETE IMPLEMENTATION: COPPER (CU)
 class CopperPredictor(BaseMetalPredictor):
     def __init__(self):
-        # model_cu.pkl, threshold 2.0
+        # cu_model.pkl, threshold 2.0
         super().__init__("model_cu.pkl", 2.0)
 
     def extract_features(self, rgb: list) -> dict:
         r, g, b = rgb
-        total_rgb = r + g + b
         
-        # Match training feature set exactly (Normalized RGB)
+        # Calculate HSV from mean RGB (normalize to 0-1 scale for colorsys)
+        h, s, v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+        
+        # Match original model_cu.pkl feature set exactly
         return {
-            "mean_R": r,
-            "mean_G": g,
-            "mean_B": b,
-            "r_norm": r / total_rgb if total_rgb != 0 else 0,
-            "g_norm": g / total_rgb if total_rgb != 0 else 0,
-            "b_norm": b / total_rgb if total_rgb != 0 else 0
+            "h": h,
+            "s": s,
+            "v": v,
+            "mean_r": r,
+            "mean_g": g,
+            "mean_b": b
         }
 
 # REGISTRY
