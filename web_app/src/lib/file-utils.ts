@@ -1,23 +1,45 @@
 import { randomUUID } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import sharp from 'sharp';
+import { supabaseServer } from './supabase-server';
 
 export async function saveSampleImage(base64Data: string): Promise<string> {
-  const [header, base64] = base64Data.split(',');
+  const [, base64] = base64Data.split(',');
   const buffer = Buffer.from(base64, 'base64');
-  const mimeType = header.match(/\/(.*?);/)?.[1] || 'png';
 
-  // Use the public directory for accessibility from the browser
-  const uploadDir = join(process.cwd(), 'public', 'uploads', 'samples');
+  const bucketName = process.env.SUPABASE_IMAGE_BUCKET || 'samples';
+  const filename = `${Date.now()}-${randomUUID().slice(0, 8)}.jpg`;
+  const filePath = `samples/${filename}`;
 
-  // Ensure the directory exists
-  await mkdir(uploadDir, { recursive: true });
+  /**
+   * Compress image using sharp.
+   * We aim for under 1MB. Starting with 80% quality JPEG.
+   */
+  let compressedBuffer = await sharp(buffer)
+    .jpeg({ quality: 80, progressive: true })
+    .toBuffer();
 
-  const filename = `${Date.now()}-${randomUUID().slice(0, 8)}.${mimeType}`;
-  const filePath = join(uploadDir, filename);
+  /**
+   * If the image is still over 1MB (1,048,576 bytes), 
+   * we compress it more aggressively.
+   */
+  if (compressedBuffer.length > 1024 * 1024) {
+    compressedBuffer = await sharp(buffer)
+      .jpeg({ quality: 50, progressive: true })
+      .toBuffer();
+  }
 
-  await writeFile(filePath, buffer);
+  const { error } = await supabaseServer.storage
+    .from(bucketName)
+    .upload(filePath, compressedBuffer, {
+      contentType: 'image/jpeg',
+      cacheControl: '3600',
+      upsert: false,
+    });
 
-  // Return the public web path
-  return `/uploads/samples/${filename}`;
+  if (error) {
+    throw new Error(`Failed to upload image to Supabase: ${error.message}`);
+  }
+
+  // Return the relative path in the bucket
+  return filePath;
 }

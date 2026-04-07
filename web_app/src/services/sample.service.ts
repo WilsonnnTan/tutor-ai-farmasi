@@ -1,17 +1,48 @@
 import { ApiError } from '@/lib/error';
 import { saveSampleImage } from '@/lib/file-utils';
+import { supabaseServer } from '@/lib/supabase-server';
 import { logError, logger } from '@/logger/logger';
 import { sampleRepository } from '@/repositories/sample.repository';
 
 export const sampleService = {
   async getHistory(userId: string) {
-    return sampleRepository.findManyByUserId(userId);
+    const samples = await sampleRepository.findManyByUserId(userId);
+
+    if (samples.length === 0) return [];
+
+    const samplesWithImages = samples.filter((s) => s.imagePath);
+    if (samplesWithImages.length === 0) return samples;
+
+    try {
+      const bucketName = process.env.SUPABASE_IMAGE_BUCKET || 'samples';
+      const paths = samplesWithImages.map((s) => s.imagePath as string);
+
+      const { data: signedUrls, error } = await supabaseServer.storage
+        .from(bucketName)
+        .createSignedUrls(paths, 3600);
+
+      if (error) {
+        logger.error('Failed to generate signed URLs', { error });
+        return samples;
+      }
+
+      const urlMap = new Map(signedUrls.map((su) => [su.path, su.signedUrl]));
+
+      return samples.map((sample) => ({
+        ...sample,
+        imagePath: sample.imagePath ? urlMap.get(sample.imagePath) || sample.imagePath : null,
+      }));
+    } catch (error) {
+      logError(error, { userId });
+      return samples;
+    }
   },
 
   async analyzeSample(base64Image: string, metalType: string) {
     logger.info(`Analisis sample dimulai untuk logam: ${metalType}`);
-    const fastApiUrl =
-      process.env.AI_ENGINE_URL || 'http://localhost:5000/api/predict';
+    const baseUrl =
+      process.env.AI_ENGINE_BASE_URL || 'http://localhost:5000';
+    const fastApiUrl = `${baseUrl.replace(/\/$/, '')}/api/predict`;
 
     // Convert base64 to Blob for FastAPI (which expects a file)
     const [header, base64] = base64Image.split(',');
@@ -73,7 +104,7 @@ export const sampleService = {
   ) {
     logger.info(`Menyimpan hasil analisis untuk: ${data.sample_name}`);
     try {
-      // Save image to public folder
+      // Save image to Supabase Bucket with compression
       const imagePath = await saveSampleImage(data.image);
 
       // Create entry in DB
