@@ -35,11 +35,6 @@ ENV/
 .env.local
 .env.*.local
 
-# ML Models
-*.pkl
-*.joblib
-*.h5
-*.onnx
 
 # Application specific
 logs/
