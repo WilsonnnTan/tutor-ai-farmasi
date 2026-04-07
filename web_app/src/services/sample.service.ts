@@ -30,7 +30,9 @@ export const sampleService = {
 
       return samples.map((sample) => ({
         ...sample,
-        imagePath: sample.imagePath ? urlMap.get(sample.imagePath) || sample.imagePath : null,
+        imagePath: sample.imagePath
+          ? urlMap.get(sample.imagePath) || sample.imagePath
+          : null,
       }));
     } catch (error) {
       logError(error, { userId });
@@ -40,8 +42,7 @@ export const sampleService = {
 
   async analyzeSample(base64Image: string, metalType: string) {
     logger.info(`Analisis sample dimulai untuk logam: ${metalType}`);
-    const baseUrl =
-      process.env.AI_ENGINE_BASE_URL || 'http://localhost:5000';
+    const baseUrl = process.env.AI_ENGINE_BASE_URL || 'http://localhost:5000';
     const fastApiUrl = `${baseUrl.replace(/\/$/, '')}/api/predict`;
 
     // Convert base64 to Blob for FastAPI (which expects a file)

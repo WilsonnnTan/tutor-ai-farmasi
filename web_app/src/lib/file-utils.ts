@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
+
 import { supabaseServer } from './supabase-server';
 
 export async function saveSampleImage(base64Data: string): Promise<string> {
@@ -19,7 +20,7 @@ export async function saveSampleImage(base64Data: string): Promise<string> {
     .toBuffer();
 
   /**
-   * If the image is still over 1MB (1,048,576 bytes), 
+   * If the image is still over 1MB (1,048,576 bytes),
    * we compress it more aggressively.
    */
   if (compressedBuffer.length > 1024 * 1024) {

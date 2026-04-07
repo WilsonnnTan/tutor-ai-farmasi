@@ -1,44 +1,49 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Camera, 
-  Box, 
-  Lightbulb, 
-  Save, 
-  FlaskConical, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Box,
   Calendar,
-  Smartphone,
+  Camera,
+  CheckCircle2,
+  FlaskConical,
   Info,
+  Save,
+  Smartphone,
   Zap,
-  CheckCircle2
 } from 'lucide-react';
 
 export default function TestingInstructions() {
   const steps = [
     {
-      title: "Pilih Jenis Logam",
+      title: 'Pilih Jenis Logam',
       description: (
         <>
-          Pilih parameter logam yang ingin diuji (contoh: <span className="font-semibold text-foreground">Tembaga/Cu</span>) pada menu dropdown yang tersedia.
+          Pilih parameter logam yang ingin diuji (contoh:{' '}
+          <span className="font-semibold text-foreground">Tembaga/Cu</span>)
+          pada menu dropdown yang tersedia.
         </>
       ),
       icon: <Zap className="h-5 w-5 text-indigo-500" />,
     },
     {
-      title: "Lengkapi Data Sampel",
+      title: 'Lengkapi Data Sampel',
       description: (
         <>
-          Masukkan <span className="font-semibold text-foreground">Nama Sampel</span> dan <span className="font-semibold text-foreground">Tanggal Uji</span> yang sesuai untuk mempermudah pelacakan di riwayat analisis.
+          Masukkan{' '}
+          <span className="font-semibold text-foreground">Nama Sampel</span> dan{' '}
+          <span className="font-semibold text-foreground">Tanggal Uji</span>{' '}
+          yang sesuai untuk mempermudah pelacakan di riwayat analisis.
         </>
       ),
       icon: <Calendar className="h-5 w-5 text-indigo-500" />,
     },
     {
-      title: "Upload Foto Larutan Sampel",
+      title: 'Upload Foto Larutan Sampel',
       description: (
         <>
           <p className="mb-4">
-            Pastikan foto yang diunggah memiliki kualitas yang baik dan sesuai dengan kondisi standar berikut:
+            Pastikan foto yang diunggah memiliki kualitas yang baik dan sesuai
+            dengan kondisi standar berikut:
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-indigo-50 dark:border-indigo-900/20 shadow-sm transition-all hover:shadow-md">
@@ -49,19 +54,30 @@ export default function TestingInstructions() {
               <ul className="text-xs space-y-2 text-muted-foreground list-none">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>Kotak fotografi interior <span className="font-medium text-foreground">Putih</span></span>
+                  <span>
+                    Kotak fotografi interior{' '}
+                    <span className="font-medium text-foreground">Putih</span>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>Ukuran kotak <span className="font-medium text-foreground">25 x 18 x 9 cm</span></span>
+                  <span>
+                    Ukuran kotak{' '}
+                    <span className="font-medium text-foreground">
+                      25 x 18 x 9 cm
+                    </span>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>Sumber cahaya layar <span className="font-medium text-foreground">#FFFFFF</span></span>
+                  <span>
+                    Sumber cahaya layar{' '}
+                    <span className="font-medium text-foreground">#FFFFFF</span>
+                  </span>
                 </li>
               </ul>
             </div>
-            
+
             <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-indigo-50 dark:border-indigo-900/20 shadow-sm transition-all hover:shadow-md">
               <div className="flex items-center gap-3 mb-3 text-indigo-600 dark:text-indigo-400 font-semibold text-sm">
                 <Smartphone className="h-4 w-4" />
@@ -70,15 +86,26 @@ export default function TestingInstructions() {
               <ul className="text-xs space-y-2 text-muted-foreground list-none">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>Model: <span className="font-medium text-foreground">Samsung A32</span></span>
+                  <span>
+                    Model:{' '}
+                    <span className="font-medium text-foreground">
+                      Samsung A32
+                    </span>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>Resolusi: <span className="font-medium text-foreground">16 MP</span></span>
+                  <span>
+                    Resolusi:{' '}
+                    <span className="font-medium text-foreground">16 MP</span>
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>Aperture: <span className="font-medium text-foreground">f/1.8</span></span>
+                  <span>
+                    Aperture:{' '}
+                    <span className="font-medium text-foreground">f/1.8</span>
+                  </span>
                 </li>
               </ul>
             </div>
@@ -88,19 +115,27 @@ export default function TestingInstructions() {
       icon: <Camera className="h-5 w-5 text-indigo-500" />,
     },
     {
-      title: "Mulai Analisis",
+      title: 'Mulai Analisis',
       description: (
         <>
-          Klik tombol <Badge variant="secondary" className="font-bold px-2 py-0">Analisis Sampel</Badge> untuk memproses foto menggunakan sistem AI.
+          Klik tombol{' '}
+          <Badge variant="secondary" className="font-bold px-2 py-0">
+            Analisis Sampel
+          </Badge>{' '}
+          untuk memproses foto menggunakan sistem AI.
         </>
       ),
       icon: <FlaskConical className="h-5 w-5 text-indigo-500" />,
     },
     {
-      title: "Simpan Hasil",
+      title: 'Simpan Hasil',
       description: (
         <>
-          Setelah hasil keluar, klik <Badge variant="secondary" className="font-bold px-2 py-0">Simpan Hasil Analisis</Badge> untuk menyimpan data secara permanen ke database.
+          Setelah hasil keluar, klik{' '}
+          <Badge variant="secondary" className="font-bold px-2 py-0">
+            Simpan Hasil Analisis
+          </Badge>{' '}
+          untuk menyimpan data secara permanen ke database.
         </>
       ),
       icon: <Save className="h-5 w-5 text-indigo-500" />,
@@ -114,10 +149,12 @@ export default function TestingInstructions() {
           <div className="p-2 rounded-lg bg-indigo-500 text-white shadow-md">
             <Info className="h-5 w-5" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Cara Pengujian</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Cara Pengujian
+          </CardTitle>
         </div>
       </CardHeader>
-      
+
       <CardContent className="p-6 md:p-10">
         <div className="space-y-0">
           {steps.map((step, index) => (
@@ -137,7 +174,9 @@ export default function TestingInstructions() {
               </div>
 
               {/* Content */}
-              <div className={`flex-1 ${index !== steps.length - 1 ? 'pb-10' : 'pb-0'}`}>
+              <div
+                className={`flex-1 ${index !== steps.length - 1 ? 'pb-10' : 'pb-0'}`}
+              >
                 <h3 className="text-xl font-bold mb-3 flex items-center gap-3 text-slate-800 dark:text-slate-100">
                   <span className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30">
                     {step.icon}

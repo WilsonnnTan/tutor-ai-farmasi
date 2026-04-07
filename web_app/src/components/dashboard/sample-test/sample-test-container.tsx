@@ -16,14 +16,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAnalyzeSample, useSaveSample } from '@/hooks/use-samples';
-import {
-  Beaker,
-  Camera,
-  ChevronRight,
-  RefreshCw,
-  Save,
-  Zap,
-} from 'lucide-react';
+import { Camera, ChevronRight, RefreshCw, Save, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -43,7 +36,6 @@ type MetalType = keyof typeof METAL_LIMITS;
 interface AnalysisResult {
   rgb: string;
   kadar: number;
-  status: string;
 }
 
 export function SampleTestContainer() {
@@ -106,13 +98,12 @@ export function SampleTestContainer() {
         metal_type: selectedMetal,
       });
 
-      const { rgb, concentration, status } = data;
+      const { rgb, concentration } = data;
       setProgress(100);
       setTimeout(() => {
         setResult({
           rgb: `RGB(${rgb.join(', ')})`,
           kadar: concentration,
-          status: status === 'AMAN' ? 'DIBAWAH BATAS' : 'MELEBIHI BATAS',
         });
         setStep('result');
         toast.success('Analisis selesai!');
@@ -303,8 +294,6 @@ export function SampleTestContainer() {
 
   const renderResult = () => {
     const metal = METAL_LIMITS[selectedMetal];
-    const isSafe = result?.status === 'DIBAWAH BATAS';
-
     return (
       <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-1000">
         <div className="text-center">
@@ -350,26 +339,6 @@ export function SampleTestContainer() {
           </Card>
 
           <div className="space-y-6">
-            <Card
-              className={`border-none shadow-2xl text-white ${isSafe ? 'bg-emerald-500 shadow-emerald-500/20' : 'bg-rose-500 shadow-rose-500/20'}`}
-            >
-              <CardContent className="p-8 text-center flex flex-col items-center justify-center min-h-[200px]">
-                <div className="p-3 rounded-full bg-white/20 mb-4 animate-pulse">
-                  {isSafe ? (
-                    <Zap className="h-8 w-8" />
-                  ) : (
-                    <Beaker className="h-8 w-8" />
-                  )}
-                </div>
-                <h3 className="text-2xl font-black uppercase tracking-tighter mb-1">
-                  {result?.status}
-                </h3>
-                <p className="text-white/80 text-sm font-medium">
-                  Batas Maksimum: {metal.limit} mg/L
-                </p>
-              </CardContent>
-            </Card>
-
             <Card className="border-none shadow-xl bg-card/60 backdrop-blur-md">
               <CardContent className="p-8">
                 <div className="flex items-baseline justify-center gap-2 mb-2">
