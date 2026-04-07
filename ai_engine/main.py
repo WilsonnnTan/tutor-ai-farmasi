@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes.predict import router
 
 # LOAD ENV
 load_dotenv()
@@ -16,10 +17,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/")
 async def root():
     return {"message": "Welcome to Tutor AI Farmasi Prediction Engine"}
+
+# REGISTER ROUTERS
+app.include_router(router)
 
 if __name__ == "__main__":
     import uvicorn
