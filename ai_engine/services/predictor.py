@@ -60,17 +60,19 @@ class CopperPredictor(BaseMetalPredictor):
     def extract_features(self, rgb: list) -> dict:
         r, g, b = rgb
         
-        # Calculate HSV from mean RGB (normalize to 0-1 scale for colorsys)
-        h, s, v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+        total_rgb = r + g + b
+        r_norm = r / total_rgb if total_rgb > 0 else 0
+        g_norm = g / total_rgb if total_rgb > 0 else 0
+        b_norm = b / total_rgb if total_rgb > 0 else 0
         
-        # Match original model_cu.pkl feature set exactly
+        # Match original cu_model.pkl feature set and order exactly
         return {
-            "h": h,
-            "s": s,
-            "v": v,
-            "mean_r": r,
-            "mean_g": g,
-            "mean_b": b
+            "mean_R": r,
+            "mean_G": g,
+            "mean_B": b,
+            "r_norm": r_norm,
+            "g_norm": g_norm,
+            "b_norm": b_norm
         }
 
 # REGISTRY
