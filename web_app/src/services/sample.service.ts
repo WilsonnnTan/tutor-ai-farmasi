@@ -1,5 +1,5 @@
 import { ApiError } from '@/lib/error';
-import { saveSampleImage } from '@/lib/file-utils';
+import { deleteSampleImages, saveSampleImage } from '@/lib/file-utils';
 import { supabaseServer } from '@/lib/supabase-server';
 import { logError, logger } from '@/logger/logger';
 import { sampleRepository } from '@/repositories/sample.repository';
@@ -123,6 +123,30 @@ export const sampleService = {
       return result;
     } catch (error) {
       logError(error, { sampleName: data.sample_name });
+      throw error;
+    }
+  },
+
+  async deleteSamples(ids: string[], userId: string) {
+    logger.info(`Menghapus ${ids.length} samples untuk user: ${userId}`);
+    try {
+      // 1. Get image paths before deletion
+      const samples = await sampleRepository.findManyByIds(ids, userId);
+      const imagePaths = samples
+        .map((s) => s.imagePath)
+        .filter((path): path is string => !!path);
+
+      // 2. Delete from DB
+      await sampleRepository.deleteMany(ids, userId);
+
+      // 3. Delete from Storage
+      if (imagePaths.length > 0) {
+        await deleteSampleImages(imagePaths);
+      }
+
+      logger.info(`Berhasil menghapus ${ids.length} samples`);
+    } catch (error) {
+      logError(error, { ids, userId });
       throw error;
     }
   },

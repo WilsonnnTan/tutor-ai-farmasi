@@ -1,8 +1,20 @@
 'use client';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -12,13 +24,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
   Table,
@@ -28,43 +33,54 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Sample, useSamples } from '@/hooks/use-samples';
-import { Eye, FileDown, Filter, Search } from 'lucide-react';
+import { useDeleteSamples, useSamples } from '@/hooks/use-samples';
+import { Eye, FileDown, Search, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
-
-const METAL_LIMITS = {
-  Cu: 2.0,
-};
+import { useCallback, useMemo, useState } from 'react';
 
 export function HistoryTable() {
   const { data: samples = [], isLoading } = useSamples();
+  const deleteMutation = useDeleteSamples();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'safe' | 'danger'>(
-    'all',
-  );
-
-  const getStatus = (s: Sample) => {
-    if (s.concentration === null) return 'unknown';
-    const limit = METAL_LIMITS[s.metalType as keyof typeof METAL_LIMITS] || 0;
-    return s.concentration <= limit ? 'safe' : 'danger';
-  };
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const filteredSamples = useMemo(() => {
     return samples.filter((s) => {
-      const matchesSearch =
+      return (
         s.sampleName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.metalType.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const status = getStatus(s);
-      const matchesStatus =
-        statusFilter === 'all' ||
-        (statusFilter === 'safe' && status === 'safe') ||
-        (statusFilter === 'danger' && status === 'danger');
-
-      return matchesSearch && matchesStatus;
+        s.metalType.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     });
-  }, [samples, searchQuery, statusFilter]);
+  }, [samples, searchQuery]);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedIds.size === filteredSamples.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredSamples.map((s) => s.id)));
+    }
+  }, [selectedIds.size, filteredSamples]);
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync(Array.from(selectedIds));
+      setSelectedIds(new Set());
+    } catch {
+      // Error handled in mutation toast
+    }
+  };
 
   const downloadCSV = () => {
     if (filteredSamples.length === 0) return;
@@ -74,18 +90,15 @@ export function HistoryTable() {
       'Nama Sample',
       'Jenis Logam',
       'Konsentrasi (mg/L)',
-      'Status',
       'RGB',
       'Tanggal Uji',
     ];
     const rows = filteredSamples.map((s, index) => {
-      const status = getStatus(s);
       return [
         index + 1,
         s.sampleName,
         s.metalType,
         s.concentration || '-',
-        status === 'safe' ? 'AMAN' : status === 'danger' ? 'BAHAYA' : '-',
         s.rgbValue || '-',
         new Date(s.testDate).toLocaleDateString('id-ID'),
       ];
@@ -115,19 +128,9 @@ export function HistoryTable() {
               Kelola dan tinjau hasil pengujian sample Anda
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={downloadCSV}
-            disabled={filteredSamples.length === 0}
-            className="hidden sm:flex"
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            Export CSV
-          </Button>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4 items-end md:items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -137,24 +140,49 @@ export function HistoryTable() {
                 className="pl-10 bg-muted/30 border-none focus-visible:ring-primary/20"
               />
             </div>
-
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground whitespace-nowrap">
-                <Filter className="h-4 w-4" /> Filter Status:
-              </div>
-              <Select
-                value={statusFilter}
-                onValueChange={(v: typeof statusFilter) => setStatusFilter(v)}
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              {selectedIds.size > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full md:w-auto animate-in fade-in slide-in-from-left-2"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Hapus ({selectedIds.size})
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Hapus Data?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Anda akan menghapus {selectedIds.size} data sample
+                        terpilih. Tindakan ini tidak dapat dibatalkan.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-destructive hover:bg-destructive/90"
+                      >
+                        Hapus
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={downloadCSV}
+                disabled={filteredSamples.length === 0}
+                className="flex-1 md:flex-none"
               >
-                <SelectTrigger className="w-[140px] bg-muted/30 border-none focus:ring-primary/20">
-                  <SelectValue placeholder="Semua" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua</SelectItem>
-                  <SelectItem value="safe">Aman</SelectItem>
-                  <SelectItem value="danger">Bahaya</SelectItem>
-                </SelectContent>
-              </Select>
+                <FileDown className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
             </div>
           </div>
 
@@ -166,16 +194,27 @@ export function HistoryTable() {
             </h3>
           </div>
 
-          <div className="rounded-xl border border-muted/20 overflow-hidden bg-card/40">
+          <div className="rounded-xl border border-muted/20 overflow-x-auto bg-card/40">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead className="w-[50px]">#</TableHead>
-                  <TableHead>Foto</TableHead>
-                  <TableHead>Nama Sample</TableHead>
-                  <TableHead>Konsentrasi</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
+                  <TableHead className="w-[50px] text-center">
+                    <Checkbox
+                      checked={
+                        filteredSamples.length > 0 &&
+                        selectedIds.size === filteredSamples.length
+                      }
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Select all"
+                    />
+                  </TableHead>
+                  <TableHead className="w-[50px] hidden md:table-cell text-center">
+                    #
+                  </TableHead>
+                  <TableHead className="text-center">Foto</TableHead>
+                  <TableHead className="text-center">Nama Sample</TableHead>
+                  <TableHead className="text-center">Konsentrasi</TableHead>
+                  <TableHead className="text-center">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -196,17 +235,25 @@ export function HistoryTable() {
                   </TableRow>
                 ) : (
                   filteredSamples.map((s, index) => {
-                    const status = getStatus(s);
                     return (
                       <TableRow
                         key={s.id}
-                        className="hover:bg-muted/30 transition-colors group"
+                        className={`hover:bg-muted/30 transition-colors group ${
+                          selectedIds.has(s.id) ? 'bg-muted/40' : ''
+                        }`}
                       >
-                        <TableCell className="font-medium text-muted-foreground">
+                        <TableCell className="text-center">
+                          <Checkbox
+                            checked={selectedIds.has(s.id)}
+                            onCheckedChange={() => toggleSelect(s.id)}
+                            aria-label={`Select ${s.sampleName}`}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium text-muted-foreground hidden md:table-cell text-center">
                           {index + 1}
                         </TableCell>
                         <TableCell>
-                          <div className="relative h-10 w-14 rounded-md overflow-hidden border border-muted/30">
+                          <div className="relative h-10 w-14 rounded-md overflow-hidden border border-muted/30 mx-auto">
                             {s.imagePath ? (
                               <Image
                                 src={s.imagePath}
@@ -221,10 +268,10 @@ export function HistoryTable() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="font-semibold">
+                        <TableCell className="font-semibold text-center">
                           {s.sampleName}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-center">
                           <span className="font-bold text-primary">
                             {s.concentration ?? '-'}
                           </span>
@@ -232,29 +279,15 @@ export function HistoryTable() {
                             mg/L
                           </span>
                         </TableCell>
-                        <TableCell>
-                          {status === 'safe' ? (
-                            <Badge
-                              variant="secondary"
-                              className="bg-emerald-500/10 text-emerald-600 border-none"
-                            >
-                              AMAN
-                            </Badge>
-                          ) : status === 'danger' ? (
-                            <Badge
-                              variant="destructive"
-                              className="bg-rose-500/10 text-rose-600 border-none"
-                            >
-                              BAHAYA
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline">N/A</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
+
+                        <TableCell className="text-center">
                           <Dialog>
                             <DialogTrigger asChild>
-                              <Button variant="ghost" size="sm">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-300 shadow-sm"
+                              >
                                 <Eye className="h-4 w-4 mr-2" /> Detail
                               </Button>
                             </DialogTrigger>
@@ -325,20 +358,6 @@ export function HistoryTable() {
                                         { dateStyle: 'long' },
                                       )}
                                     </span>
-                                  </div>
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground">
-                                      Status Keamanan
-                                    </span>
-                                    {status === 'safe' ? (
-                                      <Badge className="bg-emerald-500 hover:bg-emerald-600">
-                                        DIBAWAH BATAS
-                                      </Badge>
-                                    ) : (
-                                      <Badge variant="destructive">
-                                        MELEBIHI BATAS
-                                      </Badge>
-                                    )}
                                   </div>
                                 </div>
                               </div>

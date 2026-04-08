@@ -75,3 +75,30 @@ export const useSaveSample = () => {
     },
   });
 };
+
+export const useDeleteSamples = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const res = await fetch('/api/samples', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (data.status !== 'success')
+        throw new Error(data.message || 'Gagal menghapus data');
+      return data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['samples'] });
+      toast.success('Data berhasil dihapus.');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+};

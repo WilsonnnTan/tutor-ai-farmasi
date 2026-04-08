@@ -18,4 +18,22 @@ export const sampleRepository = {
       data,
     });
   },
+
+  async findManyByIds(ids: string[], userId: string) {
+    return prisma.sample.findMany({
+      where: {
+        id: { in: ids },
+        userId,
+      },
+    });
+  },
+
+  async deleteMany(ids: string[], userId: string) {
+    return prisma.sample.deleteMany({
+      where: {
+        id: { in: ids },
+        userId,
+      },
+    });
+  },
 };

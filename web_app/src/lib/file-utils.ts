@@ -44,3 +44,14 @@ export async function saveSampleImage(base64Data: string): Promise<string> {
   // Return the relative path in the bucket
   return filePath;
 }
+
+export async function deleteSampleImages(paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+
+  const bucketName = process.env.SUPABASE_IMAGE_BUCKET || 'samples';
+  const { error } = await supabaseServer.storage.from(bucketName).remove(paths);
+
+  if (error) {
+    throw new Error(`Failed to delete images from Supabase: ${error.message}`);
+  }
+}
