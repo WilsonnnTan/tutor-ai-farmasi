@@ -3,6 +3,14 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
@@ -16,7 +24,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAnalyzeSample, useSaveSample } from '@/hooks/use-samples';
-import { Camera, ChevronRight, RefreshCw, Save, Zap } from 'lucide-react';
+import { Camera, ChevronRight, Info, RefreshCw, Save, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -28,6 +36,7 @@ const METAL_LIMITS = {
     limit: 2.0,
     gradient: 'from-blue-500 to-cyan-500',
     icon: Zap,
+    referenceImage: '/metal/cu/output.png',
   },
 };
 
@@ -212,6 +221,57 @@ export function SampleTestContainer() {
             </div>
           </div>
 
+          {metal.referenceImage && (
+            <div className="flex items-center justify-between p-4 rounded-xl border border-primary/20 bg-primary/5 animate-in fade-in slide-in-from-top-4 duration-500 hover:bg-primary/10 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg shadow-sm">
+                  <Info className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">
+                    Grafik Validasi
+                  </h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Gunakan untuk memvalidasi seberapa akurat model AI.
+                  </p>
+                </div>
+              </div>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="font-semibold shadow-sm border-primary/20 hover:bg-primary/10 hover:text-primary"
+                  >
+                    Lihat Skala
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-6xl w-[95vw] sm:rounded-3xl border-none shadow-2xl overflow-y-auto max-h-[90vh]">
+                  <DialogHeader className="pt-4 px-2">
+                    <DialogTitle className="text-2xl flex items-center gap-2">
+                      <Zap className="h-6 w-6 text-primary" />
+                      Skala Validasi {metal.name}
+                    </DialogTitle>
+                    <DialogDescription className="text-base mt-2">
+                      Gunakan gambar ini untuk memvalidasi seberapa akurat
+                      prediksi dari model AI.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-2 w-full rounded-xl overflow-hidden border border-muted/50 bg-[#fafafa] dark:bg-[#111] flex items-center justify-center p-2 sm:p-4">
+                    <Image
+                      src={metal.referenceImage}
+                      alt={`Skala Validasi ${metal.name}`}
+                      width={1920}
+                      height={1080}
+                      className="w-full h-auto rounded-lg shadow-sm object-contain"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
+
           <Separator className="bg-primary/10" />
 
           <div className="space-y-2">
@@ -309,7 +369,7 @@ export function SampleTestContainer() {
           <Card className="overflow-hidden border-none shadow-2xl bg-card/60 backdrop-blur-md">
             <CardHeader className="bg-muted/30 pb-4">
               <CardTitle className="text-sm uppercase tracking-widest text-muted-foreground">
-                Sample Preview
+                Pratinjau Sampel
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -328,7 +388,7 @@ export function SampleTestContainer() {
               <div className="mt-4 p-4 rounded-lg bg-muted/20 border border-muted/40">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs text-muted-foreground">
-                    Spectral Info:
+                    Info Spektral:
                   </span>
                   <Badge variant="outline" className="font-mono text-[10px]">
                     {result?.rgb}
