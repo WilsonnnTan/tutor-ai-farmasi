@@ -77,6 +77,10 @@ export function SampleTestContainer() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 3.2 * 1024 * 1024) {
+        toast.error('Ukuran file tidak boleh melebihi 3.2 MB.');
+        return;
+      }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
@@ -307,7 +311,7 @@ export function SampleTestContainer() {
                     Klik atau tarik foto di sini
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Format: JPG, PNG (Maks 5MB)
+                    Format: JPG, PNG (Maks 3.2MB)
                   </p>
                 </>
               )}
