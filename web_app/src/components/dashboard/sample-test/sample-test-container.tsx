@@ -40,6 +40,13 @@ const METAL_LIMITS = {
   },
 };
 
+const CROP_CONFIG = {
+  width: 100,
+  height: 100,
+  offsetX: 65,
+  offsetY: 750,
+};
+
 type MetalType = keyof typeof METAL_LIMITS;
 
 interface AnalysisResult {
@@ -56,6 +63,10 @@ export function SampleTestContainer() {
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
@@ -82,7 +93,17 @@ export function SampleTestContainer() {
         return;
       }
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      setImagePreview(url);
+
+      const img = new window.Image();
+      img.onload = () => {
+        setImageDimensions({
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+        });
+      };
+      img.src = url;
     }
   };
 
@@ -160,8 +181,31 @@ export function SampleTestContainer() {
     setResult(null);
     setImageFile(null);
     setImagePreview(null);
+    setImageDimensions(null);
     setSampleName('');
     setSampleDate(new Date().toLocaleDateString('en-CA'));
+  };
+
+  const calculateCropBox = () => {
+    if (!imageDimensions) return null;
+
+    const { width: w, height: h } = imageDimensions;
+
+    const left = Math.max(
+      Math.floor((w - CROP_CONFIG.width) / 2) + CROP_CONFIG.offsetX,
+      0,
+    );
+    const top = Math.max(
+      Math.floor((h - CROP_CONFIG.height) / 2) + CROP_CONFIG.offsetY,
+      0,
+    );
+
+    return {
+      left: (left / w) * 100,
+      top: (top / h) * 100,
+      width: (CROP_CONFIG.width / w) * 100,
+      height: (CROP_CONFIG.height / h) * 100,
+    };
   };
 
   const renderForm = () => {
@@ -377,14 +421,36 @@ export function SampleTestContainer() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-inner border border-muted/50">
+              <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-inner border border-muted/50 bg-black/5 flex items-center justify-center">
                 {imagePreview ? (
-                  <Image
-                    src={imagePreview}
-                    alt="Sample"
-                    fill
-                    className="object-cover"
-                  />
+                  <div
+                    className="relative w-full h-full"
+                    style={{
+                      aspectRatio: imageDimensions
+                        ? `${imageDimensions.width}/${imageDimensions.height}`
+                        : 'auto',
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                    }}
+                  >
+                    <Image
+                      src={imagePreview}
+                      alt="Sample"
+                      fill
+                      className="object-contain"
+                    />
+                    {imageDimensions && (
+                      <div
+                        className="absolute border-2 border-red-500 z-10 pointer-events-none"
+                        style={{
+                          left: `${calculateCropBox()?.left}%`,
+                          top: `${calculateCropBox()?.top}%`,
+                          width: `${calculateCropBox()?.width}%`,
+                          height: `${calculateCropBox()?.height}%`,
+                        }}
+                      />
+                    )}
+                  </div>
                 ) : (
                   <Skeleton className="w-full h-full" />
                 )}
