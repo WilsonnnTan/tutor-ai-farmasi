@@ -87,15 +87,6 @@ export default function TestingInstructions() {
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
                   <span>
-                    Model:{' '}
-                    <span className="font-medium text-foreground">
-                      Samsung A32
-                    </span>
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500" />
-                  <span>
                     Resolusi:{' '}
                     <span className="font-medium text-foreground">16 MP</span>
                   </span>
