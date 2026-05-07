@@ -88,8 +88,8 @@ export function SampleTestContainer() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 3.2 * 1024 * 1024) {
-        toast.error('Ukuran file tidak boleh melebihi 3.2 MB.');
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Ukuran file tidak boleh melebihi 5 MB.');
         return;
       }
       setImageFile(file);
